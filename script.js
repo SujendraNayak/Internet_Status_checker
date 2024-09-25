@@ -1,17 +1,32 @@
-window.addEventListener("load",checkInternetConnection);
-function checkInternetConnection(){
-    const statusText=document.getElementById("statusText");
-    const ipAddressText=document.getElementById("IPAddressCheckt");
-    const snetworkStrengthText=document.getElementById("networkStrengthText");
+window.addEventListener("load", checkInternetConnection);
 
-    satusText.textContent='checking...';
-    if(navigator.online){
-        statusText.textContent='online';
-    }
-    else{
-        statusText.textContent='offline';
-        ipAddressText.textContent= '-';
-        networkStrengthText.textContent= '-'
-    }
+function checkInternetConnection() {
+    const statusText = document.getElementById("statusText");
+    const ipAddressText = document.getElementById("IPAddressCheck");
+    const networkStrengthText = document.getElementById("networkStrengthText");
 
+    statusText.textContent = 'Checking...';
+
+    if (navigator.onLine) {
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                ipAddressText.textContent = data.ip;
+                statusText.textContent = 'Connected';
+                
+                const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                const networkStrength = connection ? connection.downlink + " Mbps" : "Unknown";
+                
+                networkStrengthText.textContent = networkStrength;
+            })
+            .catch(() => {
+                statusText.textContent = 'Offline';
+                ipAddressText.textContent = '-';
+                networkStrengthText.textContent = '-';
+            });
+    } else {
+        statusText.textContent = 'Offline';
+        ipAddressText.textContent = '-';
+        networkStrengthText.textContent = '-';
+    }
 }
